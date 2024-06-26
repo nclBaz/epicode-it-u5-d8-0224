@@ -1,13 +1,16 @@
 package riccardogulin.u5d8.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import riccardogulin.u5d8.entities.User;
 import riccardogulin.u5d8.exceptions.BadRequestException;
 import riccardogulin.u5d8.exceptions.NotFoundException;
 import riccardogulin.u5d8.repositories.UsersRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -15,8 +18,10 @@ public class UsersService {
 	@Autowired
 	private UsersRepository usersRepository;
 
-	public List<User> getUsers() {
-		return usersRepository.findAll();
+	public Page<User> getUsers(int pageNumber, int pageSize, String sortBy) {
+		if (pageSize > 100) pageSize = 100;
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+		return usersRepository.findAll(pageable);
 	}
 
 	public User save(User newUser) {
